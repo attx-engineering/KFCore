@@ -16,6 +16,7 @@
  ******************************************************************************/
 
 #include "miniblas.h"
+#include "linalg.h"
 
 /******************************************************************************
  * DEFINES
@@ -32,6 +33,8 @@
 /******************************************************************************
  * LOCAL FUNCTION PROTOTYPES
  ******************************************************************************/
+
+namespace warpos {
 
 // inline int min(int a, int b) { return a < b ? a : b; }
 static int max(int a, int b)
@@ -174,7 +177,7 @@ int strsm_(const char* side, const char* uplo, const char* transa, const char* d
     b -= b_offset;
 
     /* Function Body */
-    lside = lsame_(side, "L");
+    lside = lsame_(side, &CHAR_L);
     if (lside)
     {
         nrowa = *m;
@@ -183,23 +186,23 @@ int strsm_(const char* side, const char* uplo, const char* transa, const char* d
     {
         nrowa = *n;
     }
-    nounit = lsame_(diag, "N");
-    upper  = lsame_(uplo, "U");
+    nounit = lsame_(diag, &CHAR_N);
+    upper  = lsame_(uplo, &CHAR_U);
 
     info = 0;
-    if (!lside && !lsame_(side, "R"))
+    if (!lside && !lsame_(side, &CHAR_R))
     {
         info = 1;
     }
-    else if (!upper && !lsame_(uplo, "L"))
+    else if (!upper && !lsame_(uplo, &CHAR_L))
     {
         info = 2;
     }
-    else if (!lsame_(transa, "N") && !lsame_(transa, "T") && !lsame_(transa, "C"))
+    else if (!lsame_(transa, &CHAR_N) && !lsame_(transa, &CHAR_T) && !lsame_(transa, "C"))
     {
         info = 3;
     }
-    else if (!lsame_(diag, "U") && !lsame_(diag, "N"))
+    else if (!lsame_(diag, &CHAR_U) && !lsame_(diag, &CHAR_N))
     {
         info = 4;
     }
@@ -243,7 +246,7 @@ int strsm_(const char* side, const char* uplo, const char* transa, const char* d
 
     if (lside)
     {
-        if (lsame_(transa, "N"))
+        if (lsame_(transa, &CHAR_N))
         {
             /*           Form  B := alpha*inv( A )*B. */
             if (upper)
@@ -360,7 +363,7 @@ int strsm_(const char* side, const char* uplo, const char* transa, const char* d
     }
     else
     {
-        if (lsame_(transa, "N"))
+        if (lsame_(transa, &CHAR_N))
         {
             /*           Form  B := alpha*B*inv( A ). */
             if (upper)
@@ -660,8 +663,8 @@ int sgemm_(char* transa, char* transb, int* m, int* n, int* k, float* alpha, flo
     c__ -= c_offset;
 
     /* Function Body */
-    nota = lsame_(transa, "N");
-    notb = lsame_(transb, "N");
+    nota = lsame_(transa, &CHAR_N);
+    notb = lsame_(transb, &CHAR_N);
     if (nota)
     {
         nrowa = *m;
@@ -681,11 +684,11 @@ int sgemm_(char* transa, char* transb, int* m, int* n, int* k, float* alpha, flo
 
     /*     Test the input parameters. */
     info = 0;
-    if (!nota && !lsame_(transa, "C") && !lsame_(transa, "T"))
+    if (!nota && !lsame_(transa, "C") && !lsame_(transa, &CHAR_T))
     {
         info = 1;
     }
-    else if (!notb && !lsame_(transb, "C") && !lsame_(transb, "T"))
+    else if (!notb && !lsame_(transb, "C") && !lsame_(transb, &CHAR_T))
     {
         info = 2;
     }
@@ -1024,7 +1027,7 @@ int ssyrk_(char* uplo, char* trans, int* n, int* k, float* alpha, float* a, int*
     c__ -= c_offset;
 
     /* Function Body */
-    if (lsame_(trans, "N"))
+    if (lsame_(trans, &CHAR_N))
     {
         nrowa = *n;
     }
@@ -1032,14 +1035,14 @@ int ssyrk_(char* uplo, char* trans, int* n, int* k, float* alpha, float* a, int*
     {
         nrowa = *k;
     }
-    upper = lsame_(uplo, "U");
+    upper = lsame_(uplo, &CHAR_U);
 
     info = 0;
-    if (!upper && !lsame_(uplo, "L"))
+    if (!upper && !lsame_(uplo, &CHAR_L))
     {
         info = 1;
     }
-    else if (!lsame_(trans, "N") && !lsame_(trans, "T") && !lsame_(trans, "C"))
+    else if (!lsame_(trans, &CHAR_N) && !lsame_(trans, &CHAR_T) && !lsame_(trans, "C"))
     {
         info = 2;
     }
@@ -1134,7 +1137,7 @@ int ssyrk_(char* uplo, char* trans, int* n, int* k, float* alpha, float* a, int*
 
     /*     Start the operations. */
 
-    if (lsame_(trans, "N"))
+    if (lsame_(trans, &CHAR_N))
     {
 
         /*        Form  C := alpha*A*A' + beta*C. */
@@ -1418,7 +1421,7 @@ int ssymm_(char* side, char* uplo, int* m, int* n, float* alpha, float* a, int* 
     c__ -= c_offset;
 
     /* Function Body */
-    if (lsame_(side, "L"))
+    if (lsame_(side, &CHAR_L))
     {
         nrowa = *m;
     }
@@ -1426,16 +1429,16 @@ int ssymm_(char* side, char* uplo, int* m, int* n, float* alpha, float* a, int* 
     {
         nrowa = *n;
     }
-    upper = lsame_(uplo, "U");
+    upper = lsame_(uplo, &CHAR_U);
 
     /*     Test the input parameters. */
 
     info = 0;
-    if (!lsame_(side, "L") && !lsame_(side, "R"))
+    if (!lsame_(side, &CHAR_L) && !lsame_(side, &CHAR_R))
     {
         info = 1;
     }
-    else if (!upper && !lsame_(uplo, "L"))
+    else if (!upper && !lsame_(uplo, &CHAR_L))
     {
         info = 2;
     }
@@ -1504,7 +1507,7 @@ int ssymm_(char* side, char* uplo, int* m, int* n, float* alpha, float* a, int* 
 
     /*     Start the operations. */
 
-    if (lsame_(side, "L"))
+    if (lsame_(side, &CHAR_L))
     {
 
         /*        Form  C := alpha*A*B + beta*C. */
@@ -1765,25 +1768,25 @@ int strmm_(const char* side, const char* uplo, const char* transa, const char*
     b -= b_offset;
 
     /* Function Body */
-    lside = lsame_(side, "L");
+    lside = lsame_(side, &CHAR_L);
     if (lside) {
         nrowa = *m;
     } else {
         nrowa = *n;
     }
-    nounit = lsame_(diag, "N");
-    upper = lsame_(uplo, "U");
+    nounit = lsame_(diag, &CHAR_N);
+    upper = lsame_(uplo, &CHAR_U);
 
     info = 0;
-    if (! lside && ! lsame_(side, "R")) {
+    if (! lside && ! lsame_(side, &CHAR_R)) {
     info = 1;
-    } else if (! upper && ! lsame_(uplo, "L")) {
+    } else if (! upper && ! lsame_(uplo, &CHAR_L)) {
     info = 2;
-    } else if (! lsame_(transa, "N") && ! lsame_(transa,
-         "T") && ! lsame_(transa, "C")) {
+    } else if (! lsame_(transa, &CHAR_N) && ! lsame_(transa,
+         &CHAR_T) && ! lsame_(transa, "C")) {
     info = 3;
-    } else if (! lsame_(diag, "U") && ! lsame_(diag,
-        "N")) {
+    } else if (! lsame_(diag, &CHAR_U) && ! lsame_(diag,
+        &CHAR_N)) {
     info = 4;
     } else if (*m < 0) {
     info = 5;
@@ -1820,7 +1823,7 @@ int strmm_(const char* side, const char* uplo, const char* transa, const char*
 
 /*     Start the operations. */
     if (lside) {
-    if (lsame_(transa, "N")) {
+    if (lsame_(transa, &CHAR_N)) {
 /*           Form  B := alpha*A*B. */
         if (upper) {
         i__1 = *n;
@@ -1896,7 +1899,7 @@ int strmm_(const char* side, const char* uplo, const char* transa, const char*
         }
     }
     } else {
-    if (lsame_(transa, "N")) {
+    if (lsame_(transa, &CHAR_N)) {
 /*           Form  B := alpha*B*A. */
         if (upper) {
         for (j = *n; j >= 1; --j) {
@@ -2002,3 +2005,4 @@ int strmm_(const char* side, const char* uplo, const char* transa, const char*
     return 0;
 } /* strmm_ */
 
+}

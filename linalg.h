@@ -38,17 +38,23 @@
 /******************************************************************************
  * FUNCTION PROTOTYPES
  ******************************************************************************/
+#ifndef GNCUTILS_EKF_KFCORE_LINALG_H
+#define GNCUTILS_EKF_KFCORE_LINALG_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+namespace warpos {
+
+    // Constant var definitions
+    extern char CHAR_N;
+    extern char CHAR_U;
+    extern char CHAR_L;
+    extern char CHAR_R;
+    extern char CHAR_T;
 
     /*** @brief matrix multiply C = alpha*A*B + beta*C
      * BLAS: ?gemm
      *
-     * @param[in] ta Supply "T" (transpose A) or "N" (don't transpose A)
-     * @param[in] tb Supply "T" (transpose B) or "N" (don't transpose B)
+     * @param[in] ta Supply &CHAR_T (transpose A) or &CHAR_N (don't transpose A)
+     * @param[in] tb Supply &CHAR_T (transpose B) or &CHAR_N (don't transpose B)
      * @param[in] n Dimension n (rows of A) (dimension after transpose)
      * @param[in] k Dimension k (cols of B) (dimension after transpose)
      * @param[in] m Dimension m (rows of B) (dimension after transpose)
@@ -141,7 +147,6 @@ extern "C"
      */
     int udu(const float* A, float* U, float* d, const int n);
 
-#ifdef __cplusplus
 }
 #endif
 

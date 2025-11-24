@@ -45,6 +45,8 @@
  * FUNCTION BODIES
  ******************************************************************************/
 
+namespace warpos {
+
 int kalman_udu_scalar(float* x, float* U, float* d, const float dz, const float R,
                       const float* H_line, int n)
 {
@@ -60,7 +62,7 @@ int kalman_udu_scalar(float* x, float* U, float* d, const float dz, const float 
         int   tmpone   = 1;
         float tmpalpha = 1.0f;
         memcpy(a, H_line, sizeof(a[0]) * n); // preload with H_line
-        strmm_("L", "U", "T", "U", &n, &tmpone, &tmpalpha, U, &n, a, &n);
+        strmm_(&CHAR_L, &CHAR_U, &CHAR_T, &CHAR_U, &n, &tmpone, &tmpalpha, U, &n, a, &n);
     }
 
     for (int j = 0; j < n; j++)
@@ -105,7 +107,7 @@ int kalman_udu(float* x, float* U, float* d, const float* z, const float* R, con
     {
         float Rv = MAT_ELEM(R, i, i, m, m); /// get scalar measurement variance
         float dz = z[i];                    // calculate residual for current scalar measurement
-        matmul("N", "N", 1, 1, n, -1.0f, Ht, x, 1.0f, &dz); // dz = z - H(i,:)*x
+        matmul(&CHAR_N, &CHAR_N, 1, 1, n, -1.0f, Ht, x, 1.0f, &dz); // dz = z - H(i,:)*x
 
         // <robust>
         if (chi2_threshold > 0.0f)
@@ -117,7 +119,7 @@ int kalman_udu(float* x, float* U, float* d, const float* z, const float* R, con
                      // Journal of Geodesy, 88(4), 391-401.
 
             float HPHT = 0.0f; // calc. scalar result of H_line*U*diag(d)*U'*H_line'
-            matmul("N", "N", 1, n, n, 1.0f, Ht, U, 0.0f, tmp); // tmp = H(i,:) * U
+            matmul(&CHAR_N, &CHAR_N, 1, n, n, 1.0f, Ht, U, 0.0f, tmp); // tmp = H(i,:) * U
             for (int j = 0; j < n; j++)
             {
                 HPHT += tmp[j] * tmp[j] * d[j];
@@ -164,8 +166,8 @@ int decorrelate(float* z, float* Ht, float* R, int n, int m)
     // L*H_decorr = H
     // (L*H_decorr)' = H'
     // H_decorr'*L' = H' solve for H_decorr
-    trisolveright(R /*L*/, Ht, m, n, "T");
-    trisolve(R /*L*/, z, m, 1, "N");
+    trisolveright(R /*L*/, Ht, m, n, &CHAR_T);
+    trisolve(R /*L*/, z, m, 1, &CHAR_N);
 
     return 0;
 }
@@ -180,7 +182,7 @@ void kalman_udu_predict(float* x, float* U, float* d, const float* Phi,
     {
         float tmp[KALMAN_MAX_STATE_SIZE];
         memcpy(tmp, x, sizeof(x[0])*n);
-        matmul("N", "N", n, 1, n, 1.0f, Phi, tmp, 0.0f, x);
+        matmul(&CHAR_N, &CHAR_N, n, 1, n, 1.0f, Phi, tmp, 0.0f, x);
     }
 
     // G_tmp = G; // move to internal array for destructive updates
@@ -191,7 +193,7 @@ void kalman_udu_predict(float* x, float* U, float* d, const float* Phi,
     float PhiU[KALMAN_MAX_STATE_SIZE*KALMAN_MAX_STATE_SIZE];
     float tmpalpha = 1.0f;
     memcpy(PhiU, Phi, sizeof(Phi[0])*n*n);
-    strmm_("R", "U", "N", "U", &n, &n, &tmpalpha, U, &n, PhiU, &n);
+    strmm_(&CHAR_R, &CHAR_U, &CHAR_N, &CHAR_U, &n, &n, &tmpalpha, U, &n, PhiU, &n);
 
     mateye(U, n); // U = eye(n)
 
@@ -239,5 +241,5 @@ void kalman_udu_predict(float* x, float* U, float* d, const float* Phi,
         }
     }
 }
-
+}
 /* @} */

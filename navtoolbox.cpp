@@ -39,6 +39,8 @@
  * FUNCTION BODIES
  ******************************************************************************/
 
+namespace warpos {
+
 void nav_roll_pitch_from_accelerometer(const float f[3], float* roll_rad, float* pitch_rad)
 {
     /* Source: Farrell, Jay. Aided navigation: GPS with high rate sensors.
@@ -94,3 +96,5 @@ float nav_mag_heading(const float mb[3], float roll_rad, float pitch_rad)
 }
 
 /* @} */
+
+}

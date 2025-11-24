@@ -31,11 +31,10 @@
 /******************************************************************************
  * FUNCTION PROTOTYPES
  ******************************************************************************/
+#ifndef GNCUTILS_EKF_KFCORE_KALMAN_UDU_H
+#define GNCUTILS_EKF_KFCORE_KALMAN_UDU_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+namespace warpos {
 
     /** @brief (Robust) Square Root Kalman Filter (Bierman) update routine for linear systems.
      *
@@ -102,7 +101,7 @@ extern "C"
      * As the input R is replaced by L (such that L*L' = R), L can be reused to
      * decorrelate further measurements:
      *
-     *     trisolve(L, z, m, 1, "N");
+     *     trisolve(L, z, m, 1, N_CONST);
      *
      * @return 0 if successful, if -1 state of z and H is not guaranteed to be
      *           consistent and must be discarded.
@@ -151,7 +150,6 @@ extern "C"
     void kalman_udu_predict(float* x, float* U, float* d, const float* Phi,
                             const float* G, const float* Q, int n, int r);
 
-#ifdef __cplusplus
 }
 #endif
 

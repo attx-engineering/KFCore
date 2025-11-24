@@ -1,6 +1,0 @@
-Checks: '-*,modernize-*,-modernize-use-trailing-return-type,clang-analyzer-*'
-WarningsAsErrors: ''
-HeaderFilterRegex: '.*'
-AnalyzeTemporaryDtors: false
-FormatStyle: llvm
-

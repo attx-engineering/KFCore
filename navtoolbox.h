@@ -39,11 +39,10 @@
 /******************************************************************************
  * FUNCTION PROTOTYPES
  ******************************************************************************/
+#ifndef GNCUTILS_EKF_KFCORE_NAVTOOLBOX_H
+#define GNCUTILS_EKF_KFCORE_NAVTOOLBOX_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+namespace warpos {
 
     /** @brief Calculate an approximate orientation from accelerometer data,
      * assuming that the accelerometer measurement is mainly gravity.
@@ -81,7 +80,6 @@ extern "C"
      * Note: This is not the geodetic heading, no declination correction is applied. */
     float nav_mag_heading(const float mb[3], float roll_rad, float pitch_rad);
 
-#ifdef __cplusplus
 }
 #endif
 

@@ -35,11 +35,10 @@
 /******************************************************************************
  * FUNCTION PROTOTYPES
  ******************************************************************************/
+#ifndef GNCUTILS_EKF_KFCORE_MINIBLAS_H
+#define GNCUTILS_EKF_KFCORE_MINIBLAS_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+namespace warpos {
 
     int lsame_(const char* a, const char* b);
 
@@ -58,7 +57,6 @@ extern "C"
     int strmm_(const char* side, const char* uplo, const char* transa, const char* diag, int* m,
                int* n, float* alpha, float* a, int* lda, float* b, int* ldb);
 
-#ifdef __cplusplus
 }
 #endif
 

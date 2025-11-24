@@ -32,11 +32,10 @@
 /******************************************************************************
  * FUNCTION PROTOTYPES
  ******************************************************************************/
+#ifndef GNCUTILS_EKF_KFCORE_KALMAN_TAKASU_H
+#define GNCUTILS_EKF_KFCORE_KALMAN_TAKASU_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+namespace warpos {
 
     /** @brief Kalman Filter Routine (Takasu Formulation).
      *
@@ -102,8 +101,5 @@ extern "C"
     void kalman_predict(float* x, float* P, const float* Phi,
                         const float* G, const float* Q, int n, int r);
 
-#ifdef __cplusplus
 }
 #endif
-
-/* @} */

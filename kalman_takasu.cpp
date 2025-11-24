@@ -47,6 +47,8 @@
  * FUNCTION BODIES
  ******************************************************************************/
 
+namespace warpos {
+
 int kalman_takasu(float* x, float* P, const float* dz, const float* R,
                   const float* Ht, int n, int m,
                   float chi2_threshold, float* chi2)
@@ -74,7 +76,7 @@ int kalman_takasu(float* x, float* P, const float* dz, const float* R,
 
     matmulsym(P, Ht, n, m, D); // (1) D = P * H' (using upper triangular part of P)
     memcpy(L /*dst*/, R /*src*/, sizeof(float) * m * m); // Use L as temp. matrix, preload R
-    matmul("T", "N", m, m, n, 1.0f, Ht, D, 1.0f, L);     // (2) L += H*D
+    matmul(&CHAR_T, &CHAR_N, m, m, n, 1.0f, Ht, D, 1.0f, L);     // (2) L += H*D
     int result =
         cholesky(L, m, 1 /*don't fill upper triangular part of L*/); // (3) L = chol(H*D + R)
                                                                      // (inplace calculation of L)
@@ -101,7 +103,7 @@ int kalman_takasu(float* x, float* P, const float* dz, const float* R,
         */
         float y[KALMAN_MAX_MEASUREMENTS]; /* temp variable */
         memcpy(y, dz, sizeof(dz[0]) * m);
-        trisolve(L, y, m, 1, "N"); /* L*y = dz, solve for y */
+        trisolve(L, y, m, 1, &CHAR_N); /* L*y = dz, solve for y */
         float chi2sum = 0.0f;
         for (int i = 0; i < m; i++)
         {
@@ -118,10 +120,10 @@ int kalman_takasu(float* x, float* P, const float* dz, const float* R,
         }
     }
 
-    trisolveright(L, D, m, n, "T"); // (4) given L' and D, solve E*L' = D, for E, overwrite D with E
+    trisolveright(L, D, m, n, &CHAR_T); // (4) given L' and D, solve E*L' = D, for E, overwrite D with E
     symmetricrankupdate(P, D /*E*/, n, m); // (5) P = P - E*E'
-    trisolveright(L, D /*E*/, m, n, "N");  // (6) solve K*L = E, for K, overwrite D with K
-    matmul("N", "N", n, 1, m, 1.0f, D /*K*/, dz, 1.0f, x); // (7) x = x + K * dz (K is stored in D)
+    trisolveright(L, D /*E*/, m, n, &CHAR_N);  // (6) solve K*L = E, for K, overwrite D with K
+    matmul(&CHAR_N, &CHAR_N, n, 1, m, 1.0f, D /*K*/, dz, 1.0f, x); // (7) x = x + K * dz (K is stored in D)
 
     /* FIXME check for P positive definite (symmetric is automatic)*/
     /* FIXME check for isfinite() in state vector */
@@ -141,7 +143,7 @@ void kalman_predict(float* x, float* P, const float* Phi,
     {
         float tmp[KALMAN_MAX_STATE_SIZE];
         memcpy(tmp, x, sizeof(x[0])*n);
-        matmul("N", "N", n, 1, n, 1.0f, Phi, tmp, 0.0f, x);
+        matmul(&CHAR_N, &CHAR_N, n, 1, n, 1.0f, Phi, tmp, 0.0f, x);
     }
 
     if (P && Phi)
@@ -150,8 +152,8 @@ void kalman_predict(float* x, float* P, const float* Phi,
         float Phi_x_P[KALMAN_MAX_STATE_SIZE*KALMAN_MAX_STATE_SIZE];
         alpha = 1.0f;
         beta = 0.0f;
-        ssymm_("R" /* calculate  C = B*A = Phi_x_P = Phi*P */,
-               "U" /* reference upper triangular part of A */, &n, /* rows of B/C */
+        ssymm_(&CHAR_R /* calculate  C = B*A = Phi_x_P = Phi*P */,
+               &CHAR_U /* reference upper triangular part of A */, &n, /* rows of B/C */
                &n,                                                 /* cols of B / C */
                &alpha, P, &n, (float*)Phi, &n, &beta, Phi_x_P, &n);
 
@@ -168,16 +170,16 @@ void kalman_predict(float* x, float* P, const float* Phi,
             }
 
             // (3) save GQ*G' in P(n x n)
-            matmul("N", "T", n, n, r, 1.0f, GQ, G, 0.0f, P);
+            matmul(&CHAR_N, &CHAR_T, n, n, r, 1.0f, GQ, G, 0.0f, P);
 
             // (4) P += Phi*P*Phi'
-            matmul("N", "T", n, n, n, 1.0f, Phi_x_P, Phi, 1.0f, P);
+            matmul(&CHAR_N, &CHAR_T, n, n, n, 1.0f, Phi_x_P, Phi, 1.0f, P);
         }
         else // P = Phi*P*Phi'
         {
-            matmul("N", "T", n, n, n, 1.0f, Phi_x_P, Phi, 0.0f, P);
+            matmul(&CHAR_N, &CHAR_T, n, n, n, 1.0f, Phi_x_P, Phi, 0.0f, P);
         }
     }
 }
-
+}
 /* @} */

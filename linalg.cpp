@@ -40,11 +40,19 @@
  * FUNCTION BODIES
  ******************************************************************************/
 
+namespace warpos {
+
+    char CHAR_N = 'N';
+    char CHAR_U = 'U';
+    char CHAR_R = 'R';
+    char CHAR_L = 'L';
+    char CHAR_T = 'T';
+
 void matmul(const char* ta, const char* tb, int n, int k, int m, float alpha, const float* A,
             const float* B, float beta, float* C)
 {
-    int lda    = lsame_(ta, "T") ? m : n;
-    int ldb    = lsame_(tb, "T") ? k : m;
+    int lda    = lsame_(ta, &CHAR_T) ? m : n;
+    int ldb    = lsame_(tb, &CHAR_T) ? k : m;
     int result = sgemm_((char*)ta, (char*)tb, &n, &k, &m, &alpha, (float*)A, &lda, (float*)B, &ldb,
                        &beta, C, &n);
     assert(result == 0);
@@ -54,8 +62,8 @@ void matmulsym(const float* A_sym, const float* B, int n, int m, float* C)
 {
     float alpha  = 1.0f;
     float beta   = 0.0f;
-    int   result = ssymm_("L" /* calculate C = A*B not C = B*A */,
-                         "U" /* reference upper triangular part of A */, &n, /* rows of B/C */
+    int   result = ssymm_(&CHAR_L /* calculate C = A*B not C = B*A */,
+                         &CHAR_U /* reference upper triangular part of A */, &n, /* rows of B/C */
                          &m,                                                 /* cols of B / C */
                          &alpha, (float*)A_sym, &n, (float*)B, &n, &beta, C, &n);
     assert(result == 0);
@@ -116,8 +124,8 @@ void trisolve(const float* A, float* B, int n, int m, const char* tp)
 {
     float     alpha = 1.0f;
     const int result =
-        strsm_("L" /* left hand*/, "L" /* lower triangular matrix */, tp /* transpose L? */,
-              "N" /* L is not unit triangular */, &n, &m, &alpha, A, &n, B, &n);
+        strsm_(&CHAR_L /* left hand*/, &CHAR_L /* lower triangular matrix */, tp /* transpose L? */,
+              &CHAR_N /* L is not unit triangular */, &n, &m, &alpha, A, &n, B, &n);
     assert(result == 0);
     /* strsm basically just checks for proper matrix dimensions, handle via assert */
 }
@@ -126,8 +134,8 @@ void trisolveright(const float* L, float* A, int n, int m, const char* tp)
 {
     float     alpha = 1.0f;
     const int result =
-        strsm_("R" /* right hand*/, "L" /* lower triangular matrix */, tp /* transpose L? */,
-              "N" /* L is not unit triangular */, &m, &n, &alpha, L, &n, A, &m);
+        strsm_(&CHAR_R /* right hand*/, &CHAR_L /* lower triangular matrix */, tp /* transpose L? */,
+              &CHAR_N /* L is not unit triangular */, &m, &n, &alpha, L, &n, A, &m);
     assert(result == 0);
     /* strsm basically just checks for proper matrix dimensions, handle via assert */
 }
@@ -137,7 +145,7 @@ void symmetricrankupdate(float* P, const float* E, int n, int m)
     float alpha = -1.0f;
     float beta  = 1.0f;
 
-    const int result = ssyrk_("U", "N", &n, &m, &alpha, (float*)E, &n, &beta, P, &n);
+    const int result = ssyrk_(&CHAR_U, &CHAR_N, &n, &m, &alpha, (float*)E, &n, &beta, P, &n);
     assert(result == 0);
 }
 
@@ -202,4 +210,5 @@ int udu(const float* A, float* U, float* d, const int m)
         }
     }
     return 0;
+}
 }
