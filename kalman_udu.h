@@ -54,8 +54,8 @@ namespace warpos {
      *
      * @return 0 on success, -1 on error.
      */
-    int kalman_udu(float* x, float* U, float* d, const float* z, const float* R,
-                   const float* Ht, int n, int m, float chi2_threshold, int downweight_outlier);
+    int kalman_udu(floating_point* x, floating_point* U, floating_point* d, const floating_point* z, const floating_point* R,
+                   const floating_point* Ht, int n, int m, floating_point chi2_threshold, int downweight_outlier);
 
     /** @brief Square Root Kalman Filter (Bierman) Routine for a single scalar measurement.
      *
@@ -69,8 +69,8 @@ namespace warpos {
      * @param[in] H_line Row of measurement sensitivity matrix (n x 1)
      * @param[in] n     Number of state variables
      */
-    int kalman_udu_scalar(float* x, float* U, float* d, const float dz, const float R,
-                          const float* H_line, int n);
+    int kalman_udu_scalar(floating_point* x, floating_point* U, floating_point* d, const floating_point dz, const floating_point R,
+                          const floating_point* H_line, int n);
 
     /** @brief Decorrelate measurements. For a given covariance matrix R of correlated measurements,
      * calculate a vector of decorrelated measurements (and the matching H-matrix) so that
@@ -93,7 +93,7 @@ namespace warpos {
      * filter:
      *
      *      decorrelate(z, Ht, R, n, m); // in-place decorrelation of z and Ht
-     *      float Reye[3*3];
+     *      floating_point Reye[3*3];
      *      mateye(Reye, 3); // set R to eye(2)
      *      kalman_udu(x, U, d, z, Reye, Ht, n, m, 0.0f, 0);
      *
@@ -106,7 +106,7 @@ namespace warpos {
      * @return 0 if successful, if -1 state of z and H is not guaranteed to be
      *           consistent and must be discarded.
      */
-    int decorrelate(float* z, float* Ht, float* R, int n, int m);
+    int decorrelate(floating_point* z, floating_point* Ht, floating_point* R, int n, int m);
 
     /** @brief UDU' (Thornton) Filter Temporal / Prediction Step
      *
@@ -147,8 +147,8 @@ namespace warpos {
      *  [1] Grewal, Weill, Andrews. "Global positioning systems, inertial
      *      navigation, and integration". 1st ed. John Wiley & Sons, New York, 2001.
      */
-    void kalman_udu_predict(float* x, float* U, float* d, const float* Phi,
-                            const float* G, const float* Q, int n, int r);
+    void kalman_udu_predict(floating_point* x, floating_point* U, floating_point* d, const floating_point* Phi,
+                            const floating_point* G, const floating_point* Q, int n, int r);
 
 }
 #endif

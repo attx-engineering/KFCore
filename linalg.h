@@ -15,6 +15,7 @@
 /******************************************************************************
  * PROJECT INCLUDE FILES
  ******************************************************************************/
+#include "types.h"
 
 /******************************************************************************
  * DEFINES
@@ -64,8 +65,8 @@ namespace warpos {
      * @param[in] beta Factor beta
      * @param[in/out] C Output matrix (n x k)
      */
-    void matmul(const char* ta, const char* tb, int n, int k, int m, float alpha, const float* A,
-                const float* B, float beta, float* C);
+    void matmul(const char* ta, const char* tb, int n, int k, int m, floating_point alpha, const floating_point* A,
+                const floating_point* B, floating_point beta, floating_point* C);
 
     /** @brief Multiplication of symmetric matrix A with B:
      *         C = A*B
@@ -75,12 +76,12 @@ namespace warpos {
      *  @param[in] m columns of B and C
      *  @param[out] C (n x m) matrix output of the product A*B
      */
-    void matmulsym(const float* A_sym, const float* B, int n, int m, float* C);
+    void matmulsym(const floating_point* A_sym, const floating_point* B, int n, int m, floating_point* C);
 
     /** @brief Fill array with an identity matrix.
      * @param[out] A To be filled (n x n).
      * @param[in] n Dimension of A. */
-    void mateye(float* A, int n);
+    void mateye(floating_point* A, int n);
 
     /** @brief Calculate the lower triangular matrix L, so
      * that L*L' = A. Operation count: n^3/6 with n square roots.
@@ -98,7 +99,7 @@ namespace warpos {
      *                               triangular part untouched.
      * @return 0 if successful, -1 if matrix is not positive definite.
      */
-    int cholesky(float* A, const int n, int onlyWriteLowerPart);
+    int cholesky(floating_point* A, const int n, int onlyWriteLowerPart);
 
     /**
      * @brief Triangular solve
@@ -111,7 +112,7 @@ namespace warpos {
      * @param[in]     m Matrix dimension (cols of B)
      * @param[in]     tp Transpose L?
      */
-    void trisolve(const float* A, float* B, int n, int m, const char* tp);
+    void trisolve(const floating_point* A, floating_point* B, int n, int m, const char* tp);
 
     /**
      * @brief Triangular solve (right hand side).
@@ -124,14 +125,14 @@ namespace warpos {
      * @param[in]     m Matrix dimension (rows of A)
      * @param[in]     tp Transpose L?
      */
-    void trisolveright(const float* L, float* A, int n, int m, const char* tp);
+    void trisolveright(const floating_point* L, floating_point* A, int n, int m, const char* tp);
 
     /** @brief Symmetric rank update. P = P - E*E'
      * @param[in,out] P Matrix (n x n) to be updated (only upper part is referenced and updated)
      * @param[in] E Matrix (n x m) including the update
      * @param[in] n Number of rows and cols in P, rows in E
      * @param[in] m Number of cols in E */
-    void symmetricrankupdate(float* P, const float* E, int n, int m);
+    void symmetricrankupdate(floating_point* P, const floating_point* E, int n, int m);
 
     /**
      *  @brief UDU decomposition of a symmetrical n x n matrix so that A = U*D*U'.
@@ -145,7 +146,7 @@ namespace warpos {
      * @param[in] n Matrix dimension n
      *
      */
-    int udu(const float* A, float* U, float* d, const int n);
+    int udu(const floating_point* A, floating_point* U, floating_point* d, const int n);
 
 }
 #endif

@@ -75,9 +75,9 @@ namespace warpos {
      *
      * @return 0 on success, -1 on error, -2 if measurement is rejected as outlier.
      */
-    int kalman_takasu(float* x, float* P, const float* dz, const float* R,
-                      const float* Ht, int n, int m,
-                      float chi2_threshold, float* chi2);
+    int kalman_takasu(floating_point* x, floating_point* P, const floating_point* dz, const floating_point* R,
+                      const floating_point* Ht, int n, int m,
+                      floating_point chi2_threshold, floating_point* chi2);
 
     /** @brief Kalman Temporal / Prediction Step
      *
@@ -98,8 +98,8 @@ namespace warpos {
      *      x^{-} = Phi*x^{+}
      *      P^{+} = Phi*P^{-}*Phi' + G*diag(Q)*G'
      */
-    void kalman_predict(float* x, float* P, const float* Phi,
-                        const float* G, const float* Q, int n, int r);
+    void kalman_predict(floating_point* x, floating_point* P, const floating_point* Phi,
+                        const floating_point* G, const floating_point* Q, int n, int r);
 
 }
 #endif

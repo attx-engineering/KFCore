@@ -47,20 +47,20 @@
 
 namespace warpos {
 
-int kalman_udu_scalar(float* x, float* U, float* d, const float dz, const float R,
-                      const float* H_line, int n)
+int kalman_udu_scalar(floating_point* x, floating_point* U, floating_point* d, const floating_point dz, const floating_point R,
+                      const floating_point* H_line, int n)
 {
     assert(n <= KALMAN_MAX_STATE_SIZE);
 
-    float a[KALMAN_MAX_STATE_SIZE];
-    float b[KALMAN_MAX_STATE_SIZE];
-    float alpha = R;
-    float gamma = 1.0f / alpha;
+    floating_point a[KALMAN_MAX_STATE_SIZE];
+    floating_point b[KALMAN_MAX_STATE_SIZE];
+    floating_point alpha = R;
+    floating_point gamma = 1.0f / alpha;
 
     {
         // calculate: a = U'*H'
         int   tmpone   = 1;
-        float tmpalpha = 1.0f;
+        floating_point tmpalpha = 1.0f;
         memcpy(a, H_line, sizeof(a[0]) * n); // preload with H_line
         strmm_(&CHAR_L, &CHAR_U, &CHAR_T, &CHAR_U, &n, &tmpone, &tmpalpha, U, &n, a, &n);
     }
@@ -72,9 +72,9 @@ int kalman_udu_scalar(float* x, float* U, float* d, const float dz, const float 
 
     for (int j = 0; j < n; j++)
     {
-        float beta = alpha;
+        floating_point beta = alpha;
         alpha += a[j] * b[j];
-        float lambda = -a[j] * gamma;
+        floating_point lambda = -a[j] * gamma;
 
         gamma = 1.0f / alpha; // FIXME add test to check for UDU filter health
 
@@ -95,8 +95,8 @@ int kalman_udu_scalar(float* x, float* U, float* d, const float dz, const float 
     return 0;
 }
 
-int kalman_udu(float* x, float* U, float* d, const float* z, const float* R, const float* Ht,
-               int n, int m, float chi2_threshold, int downweight_outlier)
+int kalman_udu(floating_point* x, floating_point* U, floating_point* d, const floating_point* z, const floating_point* R, const floating_point* Ht,
+               int n, int m, floating_point chi2_threshold, int downweight_outlier)
 {
     assert(n <= KALMAN_MAX_STATE_SIZE);
 
@@ -105,20 +105,20 @@ int kalman_udu(float* x, float* U, float* d, const float* z, const float* R, con
     for (int i = 0; i < m; i++, Ht += n) /* iterate over each measurement,
                                             goto next line of H after each iteration */
     {
-        float Rv = MAT_ELEM(R, i, i, m, m); /// get scalar measurement variance
-        float dz = z[i];                    // calculate residual for current scalar measurement
+        floating_point Rv = MAT_ELEM(R, i, i, m, m); /// get scalar measurement variance
+        floating_point dz = z[i];                    // calculate residual for current scalar measurement
         matmul(&CHAR_N, &CHAR_N, 1, 1, n, -1.0f, Ht, x, 1.0f, &dz); // dz = z - H(i,:)*x
 
         // <robust>
         if (chi2_threshold > 0.0f)
         {
-            float tmp[KALMAN_MAX_STATE_SIZE];
-            float s; // for chi2 test: s = H*U*diag(d)*U'*H' + R
+            floating_point tmp[KALMAN_MAX_STATE_SIZE];
+            floating_point s; // for chi2 test: s = H*U*diag(d)*U'*H' + R
                      // Chang, G. (2014). Robust Kalman filtering based on
                      // Mahalanobis distance as outlier judging criterion.
                      // Journal of Geodesy, 88(4), 391-401.
 
-            float HPHT = 0.0f; // calc. scalar result of H_line*U*diag(d)*U'*H_line'
+            floating_point HPHT = 0.0f; // calc. scalar result of H_line*U*diag(d)*U'*H_line'
             matmul(&CHAR_N, &CHAR_N, 1, n, n, 1.0f, Ht, U, 0.0f, tmp); // tmp = H(i,:) * U
             for (int j = 0; j < n; j++)
             {
@@ -126,7 +126,7 @@ int kalman_udu(float* x, float* U, float* d, const float* z, const float* R, con
             }
             s = HPHT + Rv;
 
-            const float mahalanobis_dist_sq = dz * dz / s;
+            const floating_point mahalanobis_dist_sq = dz * dz / s;
             if (mahalanobis_dist_sq > chi2_threshold) // potential outlier?
             {
                 if (!downweight_outlier)
@@ -134,7 +134,7 @@ int kalman_udu(float* x, float* U, float* d, const float* z, const float* R, con
                     continue; // just skip this measurement
                 }
                 // process this measurement, but reduce the measurement precision
-                const float f = mahalanobis_dist_sq / chi2_threshold;
+                const floating_point f = mahalanobis_dist_sq / chi2_threshold;
                 Rv            = (f - 1.0f) * HPHT + f * Rv;
             }
         }
@@ -149,7 +149,7 @@ int kalman_udu(float* x, float* U, float* d, const float* z, const float* R, con
     return retcode;
 }
 
-int decorrelate(float* z, float* Ht, float* R, int n, int m)
+int decorrelate(floating_point* z, floating_point* Ht, floating_point* R, int n, int m)
 {
     /* Basic decorrelation in MATLAB
     [G] = chol(R); % G'*G = R
@@ -172,38 +172,38 @@ int decorrelate(float* z, float* Ht, float* R, int n, int m)
     return 0;
 }
 
-void kalman_udu_predict(float* x, float* U, float* d, const float* Phi,
-                        const float* G, const float* Q, int n, int r)
+void kalman_udu_predict(floating_point* x, floating_point* U, floating_point* d, const floating_point* Phi,
+                        const floating_point* G, const floating_point* Q, int n, int r)
 {
     assert(n <= KALMAN_MAX_STATE_SIZE);
     assert(r <= KALMAN_MAX_STATE_SIZE);
 
     if (x) //  if prediction of state vector is requested: x = Phi*x;
     {
-        float tmp[KALMAN_MAX_STATE_SIZE];
+        floating_point tmp[KALMAN_MAX_STATE_SIZE];
         memcpy(tmp, x, sizeof(x[0])*n);
         matmul(&CHAR_N, &CHAR_N, n, 1, n, 1.0f, Phi, tmp, 0.0f, x);
     }
 
     // G_tmp = G; // move to internal array for destructive updates
-    float G_tmp[KALMAN_MAX_STATE_SIZE*KALMAN_MAX_STATE_SIZE];
+    floating_point G_tmp[KALMAN_MAX_STATE_SIZE*KALMAN_MAX_STATE_SIZE];
     memcpy(G_tmp, G, sizeof(G_tmp[0])*n*r);
 
     // PhiU  = Phi*U; // rows of [PhiU,G] are to be orthogonalized
-    float PhiU[KALMAN_MAX_STATE_SIZE*KALMAN_MAX_STATE_SIZE];
-    float tmpalpha = 1.0f;
+    floating_point PhiU[KALMAN_MAX_STATE_SIZE*KALMAN_MAX_STATE_SIZE];
+    floating_point tmpalpha = 1.0f;
     memcpy(PhiU, Phi, sizeof(Phi[0])*n*n);
     strmm_(&CHAR_R, &CHAR_U, &CHAR_N, &CHAR_U, &n, &n, &tmpalpha, U, &n, PhiU, &n);
 
     mateye(U, n); // U = eye(n)
 
     // save origin input d vector
-    float din[KALMAN_MAX_STATE_SIZE];
+    floating_point din[KALMAN_MAX_STATE_SIZE];
     memcpy(din, d, sizeof(d[0])*n); // din = d
 
     for (int i = n-1; i >= 0; i--)
     {
-        float sigma = 0.0f;
+        floating_point sigma = 0.0f;
         for (int j=0;j<n;j++)
         {
             sigma += MAT_ELEM(PhiU, i, j, n, n) *

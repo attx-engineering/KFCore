@@ -48,37 +48,37 @@ namespace warpos {
     char CHAR_L = 'L';
     char CHAR_T = 'T';
 
-void matmul(const char* ta, const char* tb, int n, int k, int m, float alpha, const float* A,
-            const float* B, float beta, float* C)
+void matmul(const char* ta, const char* tb, int n, int k, int m, floating_point alpha, const floating_point* A,
+            const floating_point* B, floating_point beta, floating_point* C)
 {
     int lda    = lsame_(ta, &CHAR_T) ? m : n;
     int ldb    = lsame_(tb, &CHAR_T) ? k : m;
-    int result = sgemm_((char*)ta, (char*)tb, &n, &k, &m, &alpha, (float*)A, &lda, (float*)B, &ldb,
+    int result = sgemm_((char*)ta, (char*)tb, &n, &k, &m, &alpha, (floating_point*)A, &lda, (floating_point*)B, &ldb,
                        &beta, C, &n);
     assert(result == 0);
 }
 
-void matmulsym(const float* A_sym, const float* B, int n, int m, float* C)
+void matmulsym(const floating_point* A_sym, const floating_point* B, int n, int m, floating_point* C)
 {
-    float alpha  = 1.0f;
-    float beta   = 0.0f;
+    floating_point alpha  = 1.0f;
+    floating_point beta   = 0.0f;
     int   result = ssymm_(&CHAR_L /* calculate C = A*B not C = B*A */,
                          &CHAR_U /* reference upper triangular part of A */, &n, /* rows of B/C */
                          &m,                                                 /* cols of B / C */
-                         &alpha, (float*)A_sym, &n, (float*)B, &n, &beta, C, &n);
+                         &alpha, (floating_point*)A_sym, &n, (floating_point*)B, &n, &beta, C, &n);
     assert(result == 0);
 }
 
-void mateye(float* A, int n)
+void mateye(floating_point* A, int n)
 {
-    memset(A, 0, sizeof(float) * n * n);
+    memset(A, 0, sizeof(floating_point) * n * n);
     for (int i = 0; i < n; i++)
     {
         MAT_ELEM(A, i, i, n, n) = 1.0f;
     }
 }
 
-int cholesky(float* A, const int n, int onlyWriteLowerPart)
+int cholesky(floating_point* A, const int n, int onlyWriteLowerPart)
 {
     /* in-place calculation of lower triangular matrix L*L' = A */
 
@@ -96,14 +96,14 @@ int cholesky(float* A, const int n, int onlyWriteLowerPart)
 
     for (int j = 0; j < n; j++) /* main loop */
     {
-        const float Ajj = MAT_ELEM(A, j, j, n, n);
+        const floating_point Ajj = MAT_ELEM(A, j, j, n, n);
         if (Ajj <= 0.0f || !isfinite(Ajj))
         {
             return -1;
         }
         MAT_ELEM(A, j, j, n, n) = SQRTF(Ajj);
 
-        const float invLjj = 1.0f / MAT_ELEM(A, j, j, n, n);
+        const floating_point invLjj = 1.0f / MAT_ELEM(A, j, j, n, n);
         for (int i = j + 1; i < n; i++)
         {
             MAT_ELEM(A, i, j, n, n) *= invLjj;
@@ -120,9 +120,9 @@ int cholesky(float* A, const int n, int onlyWriteLowerPart)
     return 0;
 }
 
-void trisolve(const float* A, float* B, int n, int m, const char* tp)
+void trisolve(const floating_point* A, floating_point* B, int n, int m, const char* tp)
 {
-    float     alpha = 1.0f;
+    floating_point     alpha = 1.0f;
     const int result =
         strsm_(&CHAR_L /* left hand*/, &CHAR_L /* lower triangular matrix */, tp /* transpose L? */,
               &CHAR_N /* L is not unit triangular */, &n, &m, &alpha, A, &n, B, &n);
@@ -130,9 +130,9 @@ void trisolve(const float* A, float* B, int n, int m, const char* tp)
     /* strsm basically just checks for proper matrix dimensions, handle via assert */
 }
 
-void trisolveright(const float* L, float* A, int n, int m, const char* tp)
+void trisolveright(const floating_point* L, floating_point* A, int n, int m, const char* tp)
 {
-    float     alpha = 1.0f;
+    floating_point     alpha = 1.0f;
     const int result =
         strsm_(&CHAR_R /* right hand*/, &CHAR_L /* lower triangular matrix */, tp /* transpose L? */,
               &CHAR_N /* L is not unit triangular */, &m, &n, &alpha, L, &n, A, &m);
@@ -140,16 +140,16 @@ void trisolveright(const float* L, float* A, int n, int m, const char* tp)
     /* strsm basically just checks for proper matrix dimensions, handle via assert */
 }
 
-void symmetricrankupdate(float* P, const float* E, int n, int m)
+void symmetricrankupdate(floating_point* P, const floating_point* E, int n, int m)
 {
-    float alpha = -1.0f;
-    float beta  = 1.0f;
+    floating_point alpha = -1.0f;
+    floating_point beta  = 1.0f;
 
-    const int result = ssyrk_(&CHAR_U, &CHAR_N, &n, &m, &alpha, (float*)E, &n, &beta, P, &n);
+    const int result = ssyrk_(&CHAR_U, &CHAR_N, &n, &m, &alpha, (floating_point*)E, &n, &beta, P, &n);
     assert(result == 0);
 }
 
-int udu(const float* A, float* U, float* d, const int m)
+int udu(const floating_point* A, floating_point* U, floating_point* d, const int m)
 {
     /*    A = U*diag(d)*U' decomposition
      *    Source:
@@ -179,7 +179,7 @@ int udu(const float* A, float* U, float* d, const int m)
      *    end
      */
     int   i, j, k;
-    float sigma;
+    floating_point sigma;
 
     memset(U, 0, sizeof(U[0]) * m * m);
     memset(d, 0, sizeof(d[0]) * m);

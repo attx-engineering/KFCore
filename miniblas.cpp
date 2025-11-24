@@ -52,10 +52,10 @@ int lsame_(const char* a, const char* b)
 }
 
 int strsm_(const char* side, const char* uplo, const char* transa, const char* diag, int* m, int* n,
-          float* alpha, const float* a, int* lda, float* b, int* ldb)
+          floating_point* alpha, const floating_point* a, int* lda, floating_point* b, int* ldb)
 {
     int   i__, j, k, info;
-    float temp;
+    floating_point temp;
     int   lside;
     int   nrowa;
     int   upper;
@@ -519,14 +519,14 @@ int strsm_(const char* side, const char* uplo, const char* transa, const char* d
     return 0;
 }
 
-int sgemm_(char* transa, char* transb, int* m, int* n, int* k, float* alpha, float* a, int* lda,
-          float* b, int* ldb, float* beta, float* c__, int* ldc)
+int sgemm_(char* transa, char* transb, int* m, int* n, int* k, floating_point* alpha, floating_point* a, int* lda,
+          floating_point* b, int* ldb, floating_point* beta, floating_point* c__, int* ldc)
 {
     int a_dim1, a_offset, b_dim1, b_offset, c_dim1, c_offset, i__1, i__2, i__3;
     /* Local variables */
     int   i__, j, l, info;
     int   nota, notb;
-    float temp;
+    floating_point temp;
     int   nrowa, nrowb;
 
     /*  Purpose */
@@ -899,14 +899,14 @@ int sgemm_(char* transa, char* transb, int* m, int* n, int* k, float* alpha, flo
     return 0;
 }
 
-int ssyrk_(char* uplo, char* trans, int* n, int* k, float* alpha, float* a, int* lda, float* beta,
-          float* c__, int* ldc)
+int ssyrk_(char* uplo, char* trans, int* n, int* k, floating_point* alpha, floating_point* a, int* lda, floating_point* beta,
+          floating_point* c__, int* ldc)
 {
     int a_dim1, a_offset, c_dim1, c_offset, i__1, i__2, i__3;
 
     /* Local variables */
     int   i__, j, l, info;
-    float temp;
+    floating_point temp;
     int   nrowa;
     int   upper;
 
@@ -1275,13 +1275,13 @@ int ssyrk_(char* uplo, char* trans, int* n, int* k, float* alpha, float* a, int*
     return 0;
 }
 
-int ssymm_(char* side, char* uplo, int* m, int* n, float* alpha, float* a, int* lda, float* b,
-          int* ldb, float* beta, float* c__, int* ldc)
+int ssymm_(char* side, char* uplo, int* m, int* n, floating_point* alpha, floating_point* a, int* lda, floating_point* b,
+          int* ldb, floating_point* beta, floating_point* c__, int* ldc)
 {
     int a_dim1, a_offset, b_dim1, b_offset, c_dim1, c_offset, i__1, i__2, i__3;
     /* Local variables */
     int   i__, j, k, info;
-    float temp1, temp2;
+    floating_point temp1, temp2;
     int   nrowa;
     int   upper;
 
@@ -1633,12 +1633,12 @@ int ssymm_(char* side, char* uplo, int* m, int* n, float* alpha, float* a, int* 
 }
 
 int strmm_(const char* side, const char* uplo, const char* transa, const char*
-           diag, int*m, int* n, float* alpha, float* a, int* lda, float* b,
+           diag, int*m, int* n, floating_point* alpha, floating_point* a, int* lda, floating_point* b,
            int* ldb)
 {
     int a_dim1, a_offset, b_dim1, b_offset, i__1, i__2, i__3;
     int i__, j, k, info;
-    float temp;
+    floating_point temp;
     int lside;
     int nrowa;
     int upper;

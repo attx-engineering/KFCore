@@ -12,14 +12,15 @@
 /******************************************************************************
  * PROJECT INCLUDE FILES
  ******************************************************************************/
+#include "types.h"
 
 /******************************************************************************
  * DEFINES
  ******************************************************************************/
 
-#define PI_FLOAT (3.141592653589793f)
-#define RAD2DEG(x) ((x) * (180.0f / PI_FLOAT))
-#define DEG2RAD(x) ((x) * (PI_FLOAT / 180.0f))
+#define PI_floating_point (3.141592653589793f)
+#define RAD2DEG(x) ((x) * (180.0f / PI_floating_point))
+#define DEG2RAD(x) ((x) * (PI_floating_point / 180.0f))
 #define CLIGHT (299792458.0)    /* speed of light (m/s) */
 #define OMGE (7.2921151467E-5f) /* Earth rotation rate 15deg/h */
 #define GRAVITY (9.81f)         /* Gravity */
@@ -51,7 +52,7 @@ namespace warpos {
      * @param[in] f Specific force measurement x,y,z component (m/s^2)
      * @param[out] roll_rad Output roll angle (rad)
      * @param[out] pitch_rad Output pitch angle (rad) */
-    void nav_roll_pitch_from_accelerometer(const float f[3], float* roll_rad, float* pitch_rad);
+    void nav_roll_pitch_from_accelerometer(const floating_point f[3], floating_point* roll_rad, floating_point* pitch_rad);
 
     /** @brief Calculate a matrix R that transforms from
      * the body-frame (b) to the navigation-frame (n): R^n_b.
@@ -59,8 +60,8 @@ namespace warpos {
      * @param[in] pitch_rad Pitch angle in (rad)
      * @param[in] yaw_rad Yaw angle in (rad)
      * @param[out] R_output Output 3x3 matrix in column-major format */
-    void nav_matrix_body2nav(const float roll_rad, const float pitch_rad, const float yaw_rad,
-                             float R_output[9]);
+    void nav_matrix_body2nav(const floating_point roll_rad, const floating_point pitch_rad, const floating_point yaw_rad,
+                             floating_point R_output[9]);
 
     /** @brief Calculate the magnetic heading from magnetometer measurements.
      * The orientation (roll/pitch) of the magnetometer measurements must be known.
@@ -78,7 +79,7 @@ namespace warpos {
      * @return Calculated output yaw angle (rad) of the vehicle relative to magnetic North.
      *
      * Note: This is not the geodetic heading, no declination correction is applied. */
-    float nav_mag_heading(const float mb[3], float roll_rad, float pitch_rad);
+    floating_point nav_mag_heading(const floating_point mb[3], floating_point roll_rad, floating_point pitch_rad);
 
 }
 #endif

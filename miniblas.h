@@ -15,6 +15,7 @@
 /******************************************************************************
  * PROJECT INCLUDE FILES
  ******************************************************************************/
+#include "types.h"
 
 /******************************************************************************
  * DEFINES
@@ -43,19 +44,19 @@ namespace warpos {
     int lsame_(const char* a, const char* b);
 
     int strsm_(const char* side, const char* uplo, const char* transa, const char* diag, int* m,
-              int* n, float* alpha, const float* a, int* lda, float* b, int* ldb);
+              int* n, floating_point* alpha, const floating_point* a, int* lda, floating_point* b, int* ldb);
 
-    int sgemm_(char* transa, char* transb, int* m, int* n, int* k, float* alpha, float* a, int* lda,
-              float* b, int* ldb, float* beta, float* c__, int* ldc);
+    int sgemm_(char* transa, char* transb, int* m, int* n, int* k, floating_point* alpha, floating_point* a, int* lda,
+              floating_point* b, int* ldb, floating_point* beta, floating_point* c__, int* ldc);
 
-    int ssyrk_(char* uplo, char* trans, int* n, int* k, float* alpha, float* a, int* lda,
-              float* beta, float* c__, int* ldc);
+    int ssyrk_(char* uplo, char* trans, int* n, int* k, floating_point* alpha, floating_point* a, int* lda,
+              floating_point* beta, floating_point* c__, int* ldc);
 
-    int ssymm_(char* side, char* uplo, int* m, int* n, float* alpha, float* a, int* lda, float* b,
-              int* ldb, float* beta, float* c__, int* ldc);
+    int ssymm_(char* side, char* uplo, int* m, int* n, floating_point* alpha, floating_point* a, int* lda, floating_point* b,
+              int* ldb, floating_point* beta, floating_point* c__, int* ldc);
 
     int strmm_(const char* side, const char* uplo, const char* transa, const char* diag, int* m,
-               int* n, float* alpha, float* a, int* lda, float* b, int* ldb);
+               int* n, floating_point* alpha, floating_point* a, int* lda, floating_point* b, int* ldb);
 
 }
 #endif

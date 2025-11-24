@@ -49,12 +49,12 @@
 
 namespace warpos {
 
-int kalman_takasu(float* x, float* P, const float* dz, const float* R,
-                  const float* Ht, int n, int m,
-                  float chi2_threshold, float* chi2)
+int kalman_takasu(floating_point* x, floating_point* P, const floating_point* dz, const floating_point* R,
+                  const floating_point* Ht, int n, int m,
+                  floating_point chi2_threshold, floating_point* chi2)
 {
-    float D[KALMAN_MAX_STATE_SIZE * KALMAN_MAX_MEASUREMENTS];
-    float L[KALMAN_MAX_MEASUREMENTS * KALMAN_MAX_MEASUREMENTS];
+    floating_point D[KALMAN_MAX_STATE_SIZE * KALMAN_MAX_MEASUREMENTS];
+    floating_point L[KALMAN_MAX_MEASUREMENTS * KALMAN_MAX_MEASUREMENTS];
     assert(n > 0 && n <= KALMAN_MAX_STATE_SIZE);
     assert(m > 0 && m <= KALMAN_MAX_MEASUREMENTS);
 
@@ -75,7 +75,7 @@ int kalman_takasu(float* x, float* P, const float* dz, const float* R,
     /* numerically stable */
 
     matmulsym(P, Ht, n, m, D); // (1) D = P * H' (using upper triangular part of P)
-    memcpy(L /*dst*/, R /*src*/, sizeof(float) * m * m); // Use L as temp. matrix, preload R
+    memcpy(L /*dst*/, R /*src*/, sizeof(floating_point) * m * m); // Use L as temp. matrix, preload R
     matmul(&CHAR_T, &CHAR_N, m, m, n, 1.0f, Ht, D, 1.0f, L);     // (2) L += H*D
     int result =
         cholesky(L, m, 1 /*don't fill upper triangular part of L*/); // (3) L = chol(H*D + R)
@@ -101,15 +101,15 @@ int kalman_takasu(float* x, float* P, const float* dz, const float* R,
             L*y = dz, solve for y
             chi2 = y'*y / m
         */
-        float y[KALMAN_MAX_MEASUREMENTS]; /* temp variable */
+        floating_point y[KALMAN_MAX_MEASUREMENTS]; /* temp variable */
         memcpy(y, dz, sizeof(dz[0]) * m);
         trisolve(L, y, m, 1, &CHAR_N); /* L*y = dz, solve for y */
-        float chi2sum = 0.0f;
+        floating_point chi2sum = 0.0f;
         for (int i = 0; i < m; i++)
         {
             chi2sum += y[i] * y[i]; /* y'*y */
         }
-        chi2sum /= (float)m;
+        chi2sum /= (floating_point)m;
         if (chi2)
         {
             *chi2 = chi2sum; /* supply chi2 stats requested by caller */
@@ -133,15 +133,15 @@ int kalman_takasu(float* x, float* P, const float* dz, const float* R,
     return 0;
 }
 
-void kalman_predict(float* x, float* P, const float* Phi,
-                    const float* G, const float* Q, int n, int r)
+void kalman_predict(floating_point* x, floating_point* P, const floating_point* Phi,
+                    const floating_point* G, const floating_point* Q, int n, int r)
 {
     assert(r <= KALMAN_MAX_STATE_SIZE);
-    float alpha, beta;
+    floating_point alpha, beta;
 
     if (x) //  if prediction of state vector is requested: x = Phi*x;
     {
-        float tmp[KALMAN_MAX_STATE_SIZE];
+        floating_point tmp[KALMAN_MAX_STATE_SIZE];
         memcpy(tmp, x, sizeof(x[0])*n);
         matmul(&CHAR_N, &CHAR_N, n, 1, n, 1.0f, Phi, tmp, 0.0f, x);
     }
@@ -149,18 +149,18 @@ void kalman_predict(float* x, float* P, const float* Phi,
     if (P && Phi)
     {
         // (1) Phi*P (n x n)
-        float Phi_x_P[KALMAN_MAX_STATE_SIZE*KALMAN_MAX_STATE_SIZE];
+        floating_point Phi_x_P[KALMAN_MAX_STATE_SIZE*KALMAN_MAX_STATE_SIZE];
         alpha = 1.0f;
         beta = 0.0f;
         ssymm_(&CHAR_R /* calculate  C = B*A = Phi_x_P = Phi*P */,
                &CHAR_U /* reference upper triangular part of A */, &n, /* rows of B/C */
                &n,                                                 /* cols of B / C */
-               &alpha, P, &n, (float*)Phi, &n, &beta, Phi_x_P, &n);
+               &alpha, P, &n, (floating_point*)Phi, &n, &beta, Phi_x_P, &n);
 
         if (G && Q) // P = Phi*P*Phi' + G*Q*G';
         {
             // (2) GQ = G*Q (n x r)
-            float GQ[KALMAN_MAX_STATE_SIZE*KALMAN_MAX_STATE_SIZE];
+            floating_point GQ[KALMAN_MAX_STATE_SIZE*KALMAN_MAX_STATE_SIZE];
             for (int j = 0; j < r; j++) // for each  column in G
             {
                 for (int i = 0; i < n; i++) // scale the rows with Q(j)

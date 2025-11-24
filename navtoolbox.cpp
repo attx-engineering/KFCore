@@ -41,7 +41,7 @@
 
 namespace warpos {
 
-void nav_roll_pitch_from_accelerometer(const float f[3], float* roll_rad, float* pitch_rad)
+void nav_roll_pitch_from_accelerometer(const floating_point f[3], floating_point* roll_rad, floating_point* pitch_rad)
 {
     /* Source: Farrell, Jay. Aided navigation: GPS with high rate sensors.
      * McGraw-Hill, Inc., 2008.  */
@@ -55,15 +55,15 @@ void nav_roll_pitch_from_accelerometer(const float f[3], float* roll_rad, float*
     }
 }
 
-void nav_matrix_body2nav(const float roll_rad, const float pitch_rad, const float yaw_rad,
-                         float R_output[9])
+void nav_matrix_body2nav(const floating_point roll_rad, const floating_point pitch_rad, const floating_point yaw_rad,
+                         floating_point R_output[9])
 {
-    const float sinr = sinf(roll_rad);
-    const float sinp = sinf(pitch_rad);
-    const float siny = sinf(yaw_rad);
-    const float cosr = cosf(roll_rad);
-    const float cosp = cosf(pitch_rad);
-    const float cosy = cosf(yaw_rad);
+    const floating_point sinr = sinf(roll_rad);
+    const floating_point sinp = sinf(pitch_rad);
+    const floating_point siny = sinf(yaw_rad);
+    const floating_point cosr = cosf(roll_rad);
+    const floating_point cosp = cosf(pitch_rad);
+    const floating_point cosy = cosf(yaw_rad);
     /* Source: Farrell, Jay. Aided navigation: GPS with high rate sensors.
      * McGraw-Hill, Inc., 2008. eq. 2.43 */
     R_output[0] = cosp * cosy;
@@ -77,20 +77,20 @@ void nav_matrix_body2nav(const float roll_rad, const float pitch_rad, const floa
     R_output[8] = cosr * cosp;
 }
 
-float nav_mag_heading(const float mb[3], float roll_rad, float pitch_rad)
+floating_point nav_mag_heading(const floating_point mb[3], floating_point roll_rad, floating_point pitch_rad)
 {
-    const float sinr = sinf(roll_rad);
-    const float sinp = sinf(pitch_rad);
-    const float cosr = cosf(roll_rad);
-    const float cosp = cosf(pitch_rad);
+    const floating_point sinr = sinf(roll_rad);
+    const floating_point sinp = sinf(pitch_rad);
+    const floating_point cosr = cosf(roll_rad);
+    const floating_point cosp = cosf(pitch_rad);
 
     /* Source: Farrell, Jay. Aided navigation: GPS with high rate sensors.
      * McGraw-Hill, Inc., 2008.  */
     /* Transform the magnetometer measurement in the body frame (mb) to the
      * w-frame.  The w-frame is an intermediate frame of reference defined by the
      * projection of the vehicle u-axis onto the Earth tangent plane */
-    float mw_x = cosp*mb[0] + sinp*sinr*mb[1] + sinp*cosr*mb[2]; /* eq. 10.16 */
-    float mw_y =                   cosr*mb[1] -      sinr*mb[2]; /* eq. 10.16 */
+    floating_point mw_x = cosp*mb[0] + sinp*sinr*mb[1] + sinp*cosr*mb[2]; /* eq. 10.16 */
+    floating_point mw_y =                   cosr*mb[1] -      sinr*mb[2]; /* eq. 10.16 */
 
     return atan2f(-mw_y, mw_x);
 }
